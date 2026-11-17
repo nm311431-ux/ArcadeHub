@@ -1,0 +1,547 @@
+# Игровой Портал - Три Игры
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мульти-Игровой Портал</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Play:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Play', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        }
+        
+        .retro-title {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.6), 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Стили для переворота карточек в игре "Найди Пару" */
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between">
+
+    <!-- Навигация -->
+    <header class="border-b border-indigo-500/30 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showDashboard()">
+                <span class="text-3xl">🕹️</span>
+                <h1 class="text-2xl font-bold retro-title text-indigo-400 tracking-wider">ARCADE-HUB</h1>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-2">
+                <button onclick="showDashboard()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition font-medium border border-slate-700">Главная</button>
+                <button onclick="startSnakeGame()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition font-medium shadow-md shadow-indigo-600/20">Змейка</button>
+                <button onclick="startTicTacToe()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 transition font-medium shadow-md shadow-emerald-600/20">Крестики-Нолики</button>
+                <button onclick="startMemoryGame()" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 transition font-medium shadow-md shadow-amber-600/20">Найди Пару</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Главный контент -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full flex flex-col justify-center items-center">
+        
+        <!-- ДАШБОРД (ВЫБОР ИГР) -->
+        <div id="dashboard" class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 my-auto">
+            <!-- Карточка Змейки -->
+            <div class="bg-slate-900/60 border border-indigo-500/20 rounded-2xl p-6 flex flex-col justify-between hover:border-indigo-500/50 transition duration-300 shadow-xl group">
+                <div>
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">🐍</div>
+                    <h3 class="text-xl font-bold mb-2 text-indigo-400">Ретро Змейка</h3>
+                    <p class="text-slate-400 text-sm mb-6">Классическая аркадная игра. Управляйте змейкой, собирайте еду и бейте рекорды. Оснащена сенсорным управлением для телефонов.</p>
+                </div>
+                <button onclick="startSnakeGame()" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold transition tracking-wide shadow-lg shadow-indigo-600/30">ИГРАТЬ</button>
+            </div>
+
+            <!-- Карточка Крестиков-Ноликов -->
+            <div class="bg-slate-900/60 border border-emerald-500/20 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/50 transition duration-300 shadow-xl group">
+                <div>
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">❌⭕</div>
+                    <h3 class="text-xl font-bold mb-2 text-emerald-400">Крестики-Нолики</h3>
+                    <p class="text-slate-400 text-sm mb-6">Сыграйте против умного искусственного интеллекта. Сможете ли вы перехитрить компьютер на поле 3x3?</p>
+                </div>
+                <button onclick="startTicTacToe()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold transition tracking-wide shadow-lg shadow-emerald-600/30">ИГРАТЬ</button>
+            </div>
+
+            <!-- Карточка Найди Пару -->
+            <div class="bg-slate-900/60 border border-amber-500/20 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-500/50 transition duration-300 shadow-xl group">
+                <div>
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 inline-block">🧠</div>
+                    <h3 class="text-xl font-bold mb-2 text-amber-400">Найди Пару</h3>
+                    <p class="text-slate-400 text-sm mb-6">Тренируйте свою память! Найдите все парные карточки за минимальное количество ходов. Яркие и весёлые эмодзи.</p>
+                </div>
+                <button onclick="startMemoryGame()" class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-500 font-bold transition tracking-wide shadow-lg shadow-amber-600/30">ИГРАТЬ</button>
+            </div>
+        </div>
+
+        <!-- ИГРА 1: ЗМЕЙКА -->
+        <div id="snake-container" class="hidden w-full max-w-md bg-slate-900/80 border border-indigo-500/40 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col items-center">
+            <div class="flex justify-between w-full mb-4 items-center">
+                <h2 class="text-xl font-bold text-indigo-400">Змейка</h2>
+                <div class="bg-slate-800 px-3 py-1 rounded-md text-sm border border-slate-700">Счёт: <span id="snake-score" class="font-bold text-indigo-400">0</span></div>
+            </div>
+            
+            <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 w-full aspect-square max-w-[360px]">
+                <canvas id="snakeCanvas" width="360" height="360" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Контроллеры для мобилок -->
+            <div class="grid grid-cols-3 gap-2 w-full max-w-[200px] mt-6 sm:hidden">
+                <div></div>
+                <button onclick="moveSnake('UP')" class="bg-slate-800 active:bg-indigo-600 p-4 rounded-xl text-center font-bold border border-slate-700 select-none">▲</button>
+                <div></div>
+                <button onclick="moveSnake('LEFT')" class="bg-slate-800 active:bg-indigo-600 p-4 rounded-xl text-center font-bold border border-slate-700 select-none">◀</button>
+                <button onclick="resetSnake()" class="bg-indigo-900/40 text-xs p-2 rounded-xl text-center font-bold border border-indigo-700 select-none">Сброс</button>
+                <button onclick="moveSnake('RIGHT')" class="bg-slate-800 active:bg-indigo-600 p-4 rounded-xl text-center font-bold border border-slate-700 select-none">▶</button>
+                <div></div>
+                <button onclick="moveSnake('DOWN')" class="bg-slate-800 active:bg-indigo-600 p-4 rounded-xl text-center font-bold border border-slate-700 select-none">▼</button>
+                <div></div>
+            </div>
+            <p class="hidden sm:block text-xs text-slate-500 mt-4">Управляйте с помощью стрелочек на клавиатуре (▲ ▼ ◀ ▶)</p>
+        </div>
+
+        <!-- ИГРА 2: КРЕСТИКИ-НОЛИКИ -->
+        <div id="tictactoe-container" class="hidden w-full max-w-sm bg-slate-900/80 border border-emerald-500/40 rounded-2xl p-6 shadow-2xl flex flex-col items-center">
+            <div class="flex justify-between w-full mb-4 items-center">
+                <h2 class="text-xl font-bold text-emerald-400">Крестики-Нолики</h2>
+                <div id="ttt-status" class="text-sm font-medium text-slate-300">Ваш ход (❌)</div>
+            </div>
+
+            <!-- Игровое поле -->
+            <div class="grid grid-cols-3 gap-3 w-full aspect-square max-w-[300px]">
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+                <button data-cell class="w-full aspect-square bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none"></button>
+            </div>
+
+            <button onclick="resetTicTacToe()" class="mt-6 w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold transition">Начать заново</button>
+        </div>
+
+        <!-- ИГРА 3: НАЙДИ ПАРУ -->
+        <div id="memory-container" class="hidden w-full max-w-md bg-slate-900/80 border border-amber-500/40 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col items-center">
+            <div class="flex justify-between w-full mb-4 items-center">
+                <h2 class="text-xl font-bold text-amber-400">Найди Пару</h2>
+                <div class="flex gap-3">
+                    <div class="bg-slate-800 px-3 py-1 rounded-md text-sm border border-slate-700 text-slate-300">Ходы: <span id="memory-turns" class="font-bold text-amber-400">0</span></div>
+                    <div class="bg-slate-800 px-3 py-1 rounded-md text-sm border border-slate-700 text-slate-300">Пары: <span id="memory-pairs" class="font-bold text-emerald-400">0/8</span></div>
+                </div>
+            </div>
+
+            <!-- Игровое сетка карточек -->
+            <div id="memory-grid" class="grid grid-cols-4 gap-2.5 w-full aspect-square max-w-[340px]">
+                <!-- Карточки генерируются динамически через JS -->
+            </div>
+
+            <button onclick="resetMemoryGame()" class="mt-6 w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 font-bold transition">Перемешать поле</button>
+        </div>
+
+    </main>
+
+    <!-- КАСТОМНЫЙ МОДАЛЬНЫЙ ДИАЛОГ (ЗАМЕНА ALERT) -->
+    <div id="custom-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-indigo-500/40 p-6 rounded-2xl max-w-xs w-full text-center shadow-2xl transform transition-transform scale-100">
+            <div id="modal-icon" class="text-5xl mb-3">🏆</div>
+            <h3 id="modal-title" class="text-xl font-bold mb-2">Победа!</h3>
+            <p id="modal-message" class="text-slate-400 text-sm mb-6">Вы отлично справились.</p>
+            <button onclick="closeModal()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition">Отлично</button>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="border-t border-slate-800/60 bg-slate-950/40 text-center py-4 text-xs text-slate-500">
+        &copy; 2026 Arcade-Hub. Все игры работают локально без интернета.
+    </footer>
+
+    <!-- СКРИПТЫ ИГРОВОЙ ЛОГИКИ -->
+    <script>
+        // --- ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ ---
+        const containers = {
+            dashboard: document.getElementById('dashboard'),
+            snake: document.getElementById('snake-container'),
+            tictactoe: document.getElementById('tictactoe-container'),
+            memory: document.getElementById('memory-container')
+        };
+
+        function hideAll() {
+            stopSnakeLoop();
+            Object.values(containers).forEach(c => c.classList.add('hidden'));
+        }
+
+        function showDashboard() {
+            hideAll();
+            containers.dashboard.classList.remove('hidden');
+        }
+
+        // --- СИСТЕМА УВЕДОМЛЕНИЙ (КАСТОМНЫЙ МОДАЛ) ---
+        const modal = document.getElementById('custom-modal');
+        function showNotification(title, message, icon = '🎮') {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-icon').innerText = icon;
+            modal.classList.remove('hidden');
+        }
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+
+        // ==========================================
+        // ИГРА 1: ЗМЕЙКА (SNAKE GAME)
+        // ==========================================
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('snake-score');
+        
+        const boxSize = 20; // Размер ячейки сетки (360 / 20 = 18 строк/колонок)
+        let snake = [];
+        let food = {};
+        let snakeDirection = 'RIGHT';
+        let nextDirection = 'RIGHT';
+        let snakeSpeed = 130;
+        let snakeInterval = null;
+        let snakeScore = 0;
+
+        function startSnakeGame() {
+            hideAll();
+            containers.snake.classList.remove('hidden');
+            resetSnake();
+        }
+
+        function resetSnake() {
+            stopSnakeLoop();
+            snake = [
+                {x: 8 * boxSize, y: 9 * boxSize},
+                {x: 7 * boxSize, y: 9 * boxSize},
+                {x: 6 * boxSize, y: 9 * boxSize}
+            ];
+            snakeDirection = 'RIGHT';
+            nextDirection = 'RIGHT';
+            snakeScore = 0;
+            scoreEl.innerText = snakeScore;
+            spawnFood();
+            snakeInterval = setInterval(drawSnakeGame, snakeSpeed);
+        }
+
+        function stopSnakeLoop() {
+            if (snakeInterval) clearInterval(snakeInterval);
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
+                y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
+            };
+            // Проверка, чтобы еда не появилась на змейке
+            if (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+                spawnFood();
+            }
+        }
+
+        function moveSnake(dir) {
+            if (dir === 'LEFT' && snakeDirection !== 'RIGHT') nextDirection = 'LEFT';
+            if (dir === 'UP' && snakeDirection !== 'DOWN') nextDirection = 'UP';
+            if (dir === 'RIGHT' && snakeDirection !== 'LEFT') nextDirection = 'RIGHT';
+            if (dir === 'DOWN' && snakeDirection !== 'UP') nextDirection = 'DOWN';
+        }
+
+        // Слушатель клавиатуры для ПК
+        document.addEventListener('keydown', e => {
+            if (containers.snake.classList.contains('hidden')) return;
+            if (e.key === 'ArrowLeft') moveSnake('LEFT');
+            if (e.key === 'ArrowUp') moveSnake('UP');
+            if (e.key === 'ArrowRight') moveSnake('RIGHT');
+            if (e.key === 'ArrowDown') moveSnake('DOWN');
+        });
+
+        function drawSnakeGame() {
+            snakeDirection = nextDirection;
+            
+            // Вычисляем новую голову
+            let headX = snake[0].x;
+            let headY = snake[0].y;
+
+            if (snakeDirection === 'LEFT') headX -= boxSize;
+            if (snakeDirection === 'UP') headY -= boxSize;
+            if (snakeDirection === 'RIGHT') headX += boxSize;
+            if (snakeDirection === 'DOWN') headY += boxSize;
+
+            // Столкновение со стенами или хвостом
+            if (headX < 0 || headX >= canvas.width || headY < 0 || headY >= canvas.height ||
+                snake.some((seg, index) => index !== 0 && seg.x === headX && seg.y === headY)) {
+                stopSnakeLoop();
+                showNotification('Игра Окончена', `Вы набрали очков: ${snakeScore}. Попробуйте ещё раз!`, '💀');
+                return;
+            }
+
+            // Проверка на поедание фрукта
+            if (headX === food.x && headY === food.y) {
+                snakeScore++;
+                scoreEl.innerText = snakeScore;
+                spawnFood();
+            } else {
+                snake.pop(); // Удаляем хвост, если не съели еду
+            }
+
+            // Добавляем новую голову в начало
+            snake.unshift({x: headX, y: headY});
+
+            // Отрисовка поля
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Отрисовка еды
+            ctx.fillStyle = '#f43f5e';
+            ctx.beginPath();
+            ctx.arc(food.x + boxSize/2, food.y + boxSize/2, boxSize/2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Отрисовка змейки
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? '#818cf8' : '#4f46e5';
+                ctx.strokeStyle = '#020617';
+                ctx.fillRect(segment.x, segment.y, boxSize, boxSize);
+                ctx.strokeRect(segment.x, segment.y, boxSize, boxSize);
+            });
+        }
+
+
+        // ==========================================
+        // ИГРА 2: КРЕСТИКИ-НОЛИКИ (TIC-TAC-TOE)
+        // ==========================================
+        const cells = document.querySelectorAll('[data-cell]');
+        const tttStatus = document.getElementById('ttt-status');
+        let isOurnTurn = true; // Игрок всегда X
+        let boardState = Array(9).fill(null);
+        let isGameActive = true;
+
+        const winPatterns = [
+            [0,1,2], [3,4,5], [6,7,8], // Строки
+            [0,3,6], [1,4,7], [2,5,8], // Столбцы
+            [0,4,8], [2,4,6]           // Диагонали
+        ];
+
+        function startTicTacToe() {
+            hideAll();
+            containers.tictactoe.classList.remove('hidden');
+            resetTicTacToe();
+        }
+
+        function resetTicTacToe() {
+            boardState = Array(9).fill(null);
+            isGameActive = true;
+            isOurnTurn = true;
+            tttStatus.innerText = "Ваш ход (❌)";
+            tttStatus.className = "text-sm font-medium text-slate-300";
+            cells.forEach(cell => {
+                cell.innerText = '';
+                cell.className = "w-full aspect-square bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-4xl font-bold flex items-center justify-center transition focus:outline-none select-none text-indigo-400";
+            });
+        }
+
+        cells.forEach((cell, index) => {
+            cell.addEventListener('click', () => {
+                if (!isGameActive || !isOurnTurn || boardState[index] !== null) return;
+                
+                makeMove(index, '❌', 'text-indigo-400');
+                if (checkWin('❌')) {
+                    endTTTGame('Вы победили!', '🎉');
+                    return;
+                }
+                if (boardState.every(c => c !== null)) {
+                    endTTTGame('Ничья!', '🤝');
+                    return;
+                }
+
+                // Ход робота (ИИ)
+                isOurnTurn = false;
+                tttStatus.innerText = "Компьютер думает...";
+                setTimeout(aiMove, 400);
+            });
+        });
+
+        function makeMove(index, symbol, colorClass) {
+            boardState[index] = symbol;
+            cells[index].innerText = symbol;
+            cells[index].classList.add(colorClass);
+        }
+
+        function aiMove() {
+            if (!isGameActive) return;
+
+            // Простая тактика: 1. Выиграть если можно, 2. Заблокировать игрока, 3. Рандом
+            let targetIndex = findBestMove('⭕') || findBestMove('❌');
+
+            if (targetIndex === null) {
+                let available = boardState.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+                if (available.length > 0) {
+                    targetIndex = available[Math.floor(Math.random() * available.length)];
+                }
+            }
+
+            if (targetIndex !== null) {
+                makeMove(targetIndex, '⭕', 'text-rose-400');
+                if (checkWin('⭕')) {
+                    endTTTGame('Компьютер победил!', '🤖');
+                    return;
+                }
+                if (boardState.every(c => c !== null)) {
+                    endTTTGame('Ничья!', '🤝');
+                    return;
+                }
+            }
+
+            isOurnTurn = true;
+            tttStatus.innerText = "Ваш ход (❌)";
+        }
+
+        function findBestMove(symbol) {
+            for (let pattern of winPatterns) {
+                let count = 0;
+                let emptyIdx = null;
+                for (let idx of pattern) {
+                    if (boardState[idx] === symbol) count++;
+                    else if (boardState[idx] === null) emptyIdx = idx;
+                }
+                if (count === 2 && emptyIdx !== null) return emptyIdx;
+            }
+            return null;
+        }
+
+        function checkWin(symbol) {
+            return winPatterns.some(pattern => {
+                return pattern.every(index => boardState[index] === symbol);
+            });
+        }
+
+        function endTTTGame(title, icon) {
+            isGameActive = false;
+            tttStatus.innerText = title;
+            tttStatus.className = "text-sm font-bold text-emerald-400";
+            showNotification(title, 'Сыграйте еще раз, чтобы закрепить результат!', icon);
+        }
+
+
+        // ==========================================
+        // ИГРА 3: НАЙДИ ПАРУ (MEMORY MATCH)
+        // ==========================================
+        const memoryGrid = document.getElementById('memory-grid');
+        const turnsEl = document.getElementById('memory-turns');
+        const pairsEl = document.getElementById('memory-pairs');
+        
+        const cardIcons = ['🚀', '💎', '🍕', '👾', '🦊', '👻', '👑', '🐱'];
+        let memoryDeck = [];
+        let flippedCards = [];
+        let memoryTurns = 0;
+        let matchedPairs = 0;
+        let isMemoryTimeout = false;
+
+        function startMemoryGame() {
+            hideAll();
+            containers.memory.classList.remove('hidden');
+            resetMemoryGame();
+        }
+
+        function resetMemoryGame() {
+            memoryGrid.innerHTML = '';
+            flippedCards = [];
+            memoryTurns = 0;
+            matchedPairs = 0;
+            turnsEl.innerText = memoryTurns;
+            pairsEl.innerText = '0/8';
+            isMemoryTimeout = false;
+
+            // Удваиваем массив и перемешиваем
+            memoryDeck = [...cardIcons, ...cardIcons]
+                .sort(() => Math.random() - 0.5)
+                .map((icon, index) => ({ id: index, icon: icon, matched: false }));
+
+            // Рендер карточек
+            memoryDeck.forEach(card => {
+                const cardBlock = document.createElement('div');
+                cardBlock.className = 'w-full aspect-square cursor-pointer select-none group';
+                cardBlock.dataset.id = card.id;
+
+                cardBlock.innerHTML = `
+                    <div class="card-inner w-full h-full relative rounded-xl border border-slate-800 shadow-md">
+                        <div class="card-front absolute inset-0 bg-slate-950 flex items-center justify-center rounded-xl font-bold text-xl text-amber-500 hover:bg-slate-900 transition">?</div>
+                        <div class="card-back absolute inset-0 bg-slate-800 flex items-center justify-center rounded-xl text-3xl">${card.icon}</div>
+                    </div>
+                `;
+
+                cardBlock.addEventListener('click', () => handleCardClick(cardBlock, card));
+                memoryGrid.appendChild(cardBlock);
+            });
+        }
+
+        function handleCardClick(element, card) {
+            if (isMemoryTimeout || element.classList.contains('card-flipped') || card.matched) return;
+
+            element.classList.add('card-flipped');
+            flippedCards.push({ element, card });
+
+            if (flippedCards.length === 2) {
+                memoryTurns++;
+                turnsEl.innerText = memoryTurns;
+                isMemoryTimeout = true;
+
+                const card1 = flippedCards[0];
+                const card2 = flippedCards[1];
+
+                if (card1.card.icon === card2.card.icon) {
+                    // Совпадение
+                    card1.card.matched = true;
+                    card2.card.matched = true;
+                    matchedPairs++;
+                    pairsEl.innerText = `${matchedPairs}/8`;
+                    flippedCards = [];
+                    isMemoryTimeout = false;
+
+                    if (matchedPairs === 8) {
+                        setTimeout(() => {
+                            showNotification('Отличная Память!', `Вы нашли все пары за ${memoryTurns} ходов!`, '🧠');
+                        }, 500);
+                    }
+                } else {
+                    // Не совпали - переворачиваем обратно
+                    setTimeout(() => {
+                        card1.element.classList.remove('card-flipped');
+                        card2.element.classList.remove('card-flipped');
+                        flippedCards = [];
+                        isMemoryTimeout = false;
+                    }, 1000);
+                }
+            }
+        }
+
+        // Запуск отображения главной страницы при загрузке
+        window.onload = function() {
+            showDashboard();
+        }
+    </script>
+</body>
+</html>
+
+
